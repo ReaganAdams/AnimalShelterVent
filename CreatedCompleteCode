@@ -1,0 +1,84 @@
+import java.util.LinkedList;
+import java.util.Queue;
+
+class Animal {
+    String type;
+    String name;
+    int arrivalTime;
+
+    public Animal(String type, String name, int arrivalTime) {
+        this.type = type;
+        this.name = name;
+        this.arrivalTime = arrivalTime;
+    }
+}
+
+class AnimalShelter {
+    private Queue<Animal> dogs;
+    private Queue<Animal> cats;
+    private int time;
+
+    public AnimalShelter() {
+        dogs = new LinkedList<>();
+        cats = new LinkedList<>();
+        time = 0;
+    }
+
+    // Enqueue an animal (either a dog or cat)
+    public void enqueue(Animal animal) {
+        animal.arrivalTime = time++;
+        if (animal.type.equals("dog")) {
+            dogs.offer(animal);
+        } else if (animal.type.equals("cat")) {
+            cats.offer(animal);
+        }
+    }
+
+    // Dequeue the oldest animal (any type)
+    public Animal dequeueAny() {
+        if (dogs.isEmpty()) return cats.poll();
+        if (cats.isEmpty()) return dogs.poll();
+
+        // Compare arrival times of the oldest dog and cat
+        Animal dog = dogs.peek();
+        Animal cat = cats.peek();
+
+        if (dog.arrivalTime < cat.arrivalTime) {
+            return dogs.poll();
+        } else {
+            return cats.poll();
+        }
+    }
+
+    // Dequeue the oldest dog
+    public Animal dequeueDog() {
+        if (!dogs.isEmpty()) {
+            return dogs.poll();
+        }
+        return null;  // No dogs in the shelter
+    }
+
+    // Dequeue the oldest cat
+    public Animal dequeueCat() {
+        if (!cats.isEmpty()) {
+            return cats.poll();
+        }
+        return null;  // No cats in the shelter
+    }
+
+    public static void main(String[] args) {
+        AnimalShelter shelter = new AnimalShelter();
+        
+        // Enqueue animals
+        shelter.enqueue(new Animal("dog", "Fido", 0));
+        shelter.enqueue(new Animal("cat", "Whiskers", 0));
+        shelter.enqueue(new Animal("dog", "Rex", 0));
+        shelter.enqueue(new Animal("cat", "Fluffy", 0));
+
+        // Adopt animals
+        System.out.println("Dequeue Any: " + shelter.dequeueAny().name);  // Should return Fido (oldest)
+        System.out.println("Dequeue Dog: " + shelter.dequeueDog().name);  // Should return Rex
+        System.out.println("Dequeue Cat: " + shelter.dequeueCat().name);  // Should return Whiskers
+        System.out.println("Dequeue Any: " + shelter.dequeueAny().name);  // Should return Fluffy
+    }
+}
